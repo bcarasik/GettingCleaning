@@ -2,8 +2,10 @@
 # Project for Getting and Cleaning Data 
 #
 # Part1: merge training and test datasets
-# read x_test, select features containing the string 'std' or 'mean', 
-#  combine test and train files, adding columns for test subject and activity name.
+# read x_test and x_train, then select features containing the string 'std' or 'mean'.
+# read y_test and y_train for activity codes, subject_test and subject_train for
+# the subject id's. 
+# Combine test and train files, adding columns for test subject and activity name.
 # all files are in "Bob/GCData/UCI HAR Dataset" for ease of running this script.
 library(sqldf)
 library(plyr)
@@ -18,7 +20,7 @@ library(data.table)
  acttrain <- read.table("y_train.txt")
  subtrain <-read.table("subject_train.txt")
 #
-# Part 2: read a text file of all feature names, select those containing 'std' or 'mean', 
+# Part 2: read a text file of all feature names. Select those containing 'std' or 'mean', 
 # then create suitable variable names by using gsub to remove characters
 #  that can't be used as column names in R.  
 #
@@ -35,7 +37,9 @@ activity <- read.table("activity_labels.txt")
 names(activity)[1] <- "Code"
 names(activity)[2] <- "Name"
 #
-# bind columns for subject ID and activity code to the test and training data
+# Step 3 and 4: 
+#  Bind columns for subject ID and activity code to the test and training data, then combine
+#  via rbind to yield 'thedata' which is my merged data frame. 
 #
  testdata <- cbind(rawtest[, mycols], subtest)
  testdata <- cbind(testdata, acttest)
@@ -46,7 +50,8 @@ thedata <- rbind( testdata, traindata)
 names(thedata)[numfeatures + 1] <- "Subject"
 names(thedata)[numfeatures + 2] <- "ActivityCode"
 #
-# Part 3: add a column to thedata with the activity name.
+# Part 3: add a column to thedata with the activity name, access from the activity 
+# table using the activity code.
 #
 thedata["ActivityName"] <- NA
 for ( i in 1:nrow(thedata)) { 
@@ -54,26 +59,23 @@ for ( i in 1:nrow(thedata)) {
     as.character(activity[thedata[i,"ActivityCode"],"Name"]) 
 }
 #
-# Part 4.  Appropriately label the data set with descriptive variable names.
+# Part 4.  Appropriately label the data set with descriptive variable names. These are 
+# the incoming feature names, with incompatible characters removed, above.
 #
 for ( i in 1:numfeatures ) { names(thedata)[i] <- as.character(thefeatures[i,2])}
-
 #
 # Part 5:  From the data set in step 4, creates a second, independent tidy data set 
-#  with the average of each variable for each activity and each subject.
+#  with the average of each variable for each activity and each subject. The 'summaries' 
+#  data frame has the same column names as 'thedata', with '_mean' appended to indicate 
+#  the values are the mean of the given feature for each combination of activity and subject.
 #
 maxsub <- max(thedata$Subject) 
 datacol <- ncol(thedata) 
-summaries <- as.data.frame( matrix (  nrow = 1, ncol = datacol) )
-for ( i in 1:datacol) { 
-  names(summaries)[i] <- names(thedata)[i] 
+summaries <- as.data.frame( matrix (  nrow = 1, ncol = (datacol-3) ))
+for ( i in 1:(datacol-3) ) { 
+  names(summaries)[i] <- paste(names(thedata)[i], "_mean", sep="")
 }
 #
-actrows <- nrow(activity)
-indx <- 0
-# 
-# try plyr latr !! 
-# 
 actrows <- nrow(activity)
 indx <- 0
 for (i in 1:actrows) {
@@ -89,5 +91,9 @@ for (i in 1:actrows) {
     }  
   }
 }
-write.table(summaries, file ="mysummaries.csv", sep = ",", row.names = FALSE) 
- 
+write.table(summaries, file ="mysummaries.txt", sep = ",", row.names = FALSE) 
+#
+# output summary feature names for the codebook
+#                                
+# write.table(names(thedata),"datacodebook.txt") 
+write.table(names(summaries),"summarycodebook.txt")
