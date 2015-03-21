@@ -1,6 +1,6 @@
 This is the code book for my project. These are the column names for the table that
  my R script wrote to my_summaries.txt.  Each line of this table is a unique observation set, defined as 
-for each of 79 features, the mean of its observations for a gien activty done by a given subject.
+for each of 79 features, the mean of its observations for a given activty done by a given subject.
 
 "1" "tBodyAcc-mean..-X_mean"
 "2" "tBodyAcc-mean..-Y_mean"
