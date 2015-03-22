@@ -1,6 +1,4 @@
-This is the code book for my project. These are the column names for the table that
- my R script wrote to my_summaries.txt.  Each line of this table is a unique observation set, defined as 
-for each of 79 features, the mean of its observations for a given actiivty done by a given subject. Here are the feature names, followed by the activity code, activity name, and subject id:
+This is the code book for my project. These are the column names for the table that  my R script wrote to my_summaries.txt.  Each line of this table is a unique observation set, defined as for each of 79 features, the mean of its observations for a given activity done by a given subject. Here are the feature names, followed by the activity code, activity name, and subject id, for a total of 82 data names:
 
 1. "1" "tBodyAcc-mean..-X_mean"
 1. "2" "tBodyAcc-mean..-Y_mean"
